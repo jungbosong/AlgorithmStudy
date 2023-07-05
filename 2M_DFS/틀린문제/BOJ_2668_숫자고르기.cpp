@@ -3,25 +3,30 @@ using namespace std;
 
 #define MAX 101
 int Map[MAX];
-bool visited[MAX] = {};
-priority_queue<int> pq;
-int N;
+int team[MAX];
+int visited[MAX];
+priority_queue<int, vector<int>, greater<int>> pq;
+int N, cnt;
 
-bool DFS(int root, int start, int end)
+void DFS(int here, int n)
 {
-    cout << "DFS(" << root << ", " << start << ", " << end << "\n";
-    if(visited[root] || visited[start] || visited[end]) return false;
-    visited[root] = true;
-    visited[start] = true;
-    visited[end] = true;
-    if(start == end || root == end) {
-        pq.push(start);
-        return true;
+    int next;
+    if(visited[here] == -1 || team[here] == 1)
+        return;
+    
+    if(visited[here] == 0){
+        visited[here] = 1;
     }
-    if(DFS(root, end, Map[end])) {
-        pq.push(root);
+    else if(visited[here] == 1){
+        team[here] = 1;
+        cnt++;
+        pq.push(here);
+        
     }
-    return false;
+    
+    next = Map[here];
+    DFS(next, n);
+    visited[here] = -1;
 }
 
 int main()
@@ -38,12 +43,13 @@ int main()
 
     for(int i = 1; i <= N; i++)
     {
-        if(!visited[i]) DFS(i, i, Map[i]);
+        if(visited[i] != 0)
+            continue;
+        DFS(i, N);
     }
 
-    cout << pq.size() << "\n";
-    while(!pq.empty())
-    {
+    cout << cnt << "\n";
+    for(int i=0; i < cnt; i++){
         cout << pq.top() << "\n";
         pq.pop();
     }
